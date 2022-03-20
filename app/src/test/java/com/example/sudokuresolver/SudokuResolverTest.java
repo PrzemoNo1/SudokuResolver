@@ -25,6 +25,7 @@ public class SudokuResolverTest {
                 "3", "", "", "7", "9", "8", "", "4", "",
                 "", "", "8", "6", "", "", "", "", "1"
         ));
+        assertEquals(1, resolver.getField("11"));
         assertEquals(3, resolver.getField("12"));
         assertEquals(5, resolver.getField("16"));
         assertEquals(2, resolver.getField("18"));

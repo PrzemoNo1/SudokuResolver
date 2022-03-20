@@ -2,6 +2,8 @@ package com.example.sudokuresolver;
 
 import androidx.annotation.VisibleForTesting;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -14,6 +16,7 @@ public class SudokuResolver {
             throw new RuntimeException("Wrong number of elements");
         }
         initializeFields(list);
+        analyzeSquares();
     }
 
     private void initializeFields(List<String> list) {
@@ -39,6 +42,89 @@ public class SudokuResolver {
             }
             initialKey = String.valueOf(initialNumber);
         }
+    }
+
+    private void analyzeSquares() {
+        for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
+            for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
+                int timesSingleValueWasAddedAsPossible = 0;
+                String remeberedCoordinates = "";
+                for (String element : mFields.keySet()) {
+                    if (squareNumber != getSquareNumber(element)) {
+                        continue;
+                    }
+                    if (mFields.get(element).getNumber() != 0) {
+                        continue;
+                    }
+                    int row = Integer.parseInt(element) % 10;
+                    if (isValueInRow(singleFieldValue, row)) {
+                        continue;
+                    }
+                    int column = Integer.parseInt(element) / 10;
+                    if (isValueInColumn(singleFieldValue, column)) {
+                        continue;
+                    }
+                    if (isInSquare(singleFieldValue, squareNumber)) {
+                        continue;
+                    }
+                    ++timesSingleValueWasAddedAsPossible;
+                    remeberedCoordinates = element;
+                    mFields.get(element).addPossibleNumber(singleFieldValue);
+                }
+                if (timesSingleValueWasAddedAsPossible == 1) {
+                    int newValue = mFields.get(remeberedCoordinates).getOnlyPossibleNumber();
+                    mFields.get(remeberedCoordinates).setNumber(newValue);
+                }
+            }
+        }
+    }
+
+    private boolean isInSquare(int singleFieldValue, int squareNumber) {
+        return false;
+    }
+
+    private boolean isValueInRow(int value, int row) {
+        List<String> elementInRow = Arrays.asList(
+                String.valueOf(row) + "1",
+                String.valueOf(row) + "2",
+                String.valueOf(row) + "3",
+                String.valueOf(row) + "4",
+                String.valueOf(row) + "5",
+                String.valueOf(row) + "6",
+                String.valueOf(row) + "7",
+                String.valueOf(row) + "8",
+                String.valueOf(row) + "9"
+        );
+
+        for (String element : elementInRow) {
+            if (mFields.get(element).getNumber() == value) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isValueInColumn(int value, int column) {
+        List<String> elementInColumn = Arrays.asList(
+                "1" + String.valueOf(column),
+                "2" + String.valueOf(column),
+                "3" + String.valueOf(column),
+                "4" + String.valueOf(column),
+                "5" + String.valueOf(column),
+                "6" + String.valueOf(column),
+                "7" + String.valueOf(column),
+                "8" + String.valueOf(column),
+                "9" + String.valueOf(column)
+        );
+
+        for (String element : elementInColumn) {
+            if (mFields.get(element).getNumber() == value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int getSquareNumber(String key) {
@@ -101,7 +187,7 @@ public class SudokuResolver {
         private int mXCord;
         private int mYCord;
         private int mSquareNumber;
-        private Vector<Integer> mPossibleNumbers;
+        private List<Integer> mPossibleNumbers = new ArrayList<>();
 
         public void setXCord(int xCord) {
             mXCord = xCord;
@@ -120,5 +206,16 @@ public class SudokuResolver {
         }
 
         public void setSquareNumber(int number) { mSquareNumber = number;}
+
+        public void addPossibleNumber(int singleFieldValue) {
+            mPossibleNumbers.add(singleFieldValue);
+        }
+
+        public int getOnlyPossibleNumber() {
+            if (mPossibleNumbers.size() != 1) {
+                throw new RuntimeException("Wrong number of possible numbers: " + mPossibleNumbers);
+            }
+            return mPossibleNumbers.get(0);
+        }
     }
 }
