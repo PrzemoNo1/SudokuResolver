@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         EditText numberEightNine = findViewById(R.id.EightNine);
         EditText numberNineNine = findViewById(R.id.NineNine);
 
-        SudokuResolver resolver = new SudokuResolver(
+        SudokuResolver resolver = new SudokuResolver(Arrays.asList(
                 numberOneOne.getText().toString(),
                 numberTwoOne.getText().toString(),
                 numberThreeOne.getText().toString(),
@@ -187,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 numberSixNine.getText().toString(),
                 numberSevenNine.getText().toString(),
                 numberEightNine.getText().toString(),
-                numberNineNine.getText().toString()
+                numberNineNine.getText().toString())
         );
         TextView txtView = findViewById(R.id.Test12);
         txtView.setText(numberOneOne.getText());
