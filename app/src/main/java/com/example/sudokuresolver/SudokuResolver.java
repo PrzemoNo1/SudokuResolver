@@ -22,6 +22,10 @@ public class SudokuResolver {
         if (list.size() != 81) {
             throw new RuntimeException("Wrong number of elements");
         }
+        initializeFields(list);
+    }
+
+    private void initializeFields(List<String> list) {
         mFields = new HashMap<>(81);
         String initialKey = "11";
         for (String element : list) {
@@ -30,15 +34,12 @@ public class SudokuResolver {
                 field.setNumber(Integer.parseInt(element));
             }
             mFields.put(initialKey, field);
-            StringBuilder sb = new StringBuilder(initialKey);
-            int initialNumber = Integer.parseInt(sb.reverse().toString());
+            int initialNumber = Integer.parseInt(initialKey);
             ++initialNumber;
             if (initialNumber % 10 == 0) {
-                ++ initialNumber;
+                ++initialNumber;
             }
             initialKey = String.valueOf(initialNumber);
-            sb = new StringBuilder(initialKey);
-            initialKey = sb.reverse().toString();
         }
     }
 
