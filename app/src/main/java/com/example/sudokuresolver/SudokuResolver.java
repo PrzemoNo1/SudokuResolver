@@ -2,13 +2,12 @@ package com.example.sudokuresolver;
 
 import androidx.annotation.VisibleForTesting;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class SudokuResolver {
-    private HashMap<Integer, Field> mFields;
+    private HashMap<Integer, Integer> mFields;
 
     public SudokuResolver(List<String> list) {
         if (list.size() != 81) {
@@ -21,19 +20,12 @@ public class SudokuResolver {
     private void initializeFields(List<String> list) {
         mFields = new HashMap<>(81);
         int initialNumber = 11;
-        int xCord;
-        int yCord;
         for (String element : list) {
-            Field field = new Field();
             if (!element.equals("")) {
-                field.setNumber(Integer.parseInt(element));
+                mFields.put(initialNumber, Integer.parseInt(element));
+            } else {
+                mFields.put(initialNumber, 0);
             }
-            xCord = initialNumber % 10;
-            yCord = initialNumber / 10;
-            field.setXCord(xCord);
-            field.setYCord(yCord);
-            field.setSquareNumber(getSquareNumber(initialNumber));
-            mFields.put(initialNumber, field);
             ++initialNumber;
             if (initialNumber % 10 == 0) {
                 ++initialNumber;
@@ -46,12 +38,12 @@ public class SudokuResolver {
         for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
             for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
                 int timesSingleValueWasAddedAsPossible = 0;
-                int remeberedCoordinates = 0;
+                int rememberedCoordinates = 0;
                 for (Integer element : mFields.keySet()) {
                      if (squareNumber != getSquareNumber(element)) {
                         continue;
                     }
-                    if (mFields.get(element).getNumber() != 0) {
+                    if (0 != mFields.get(element)) {
                         continue;
                     }
                     int row = element / 10;
@@ -66,11 +58,10 @@ public class SudokuResolver {
                         continue;
                     }
                     ++timesSingleValueWasAddedAsPossible;
-                    remeberedCoordinates = element;
-                    mFields.get(element).addPossibleNumber(singleFieldValue);
+                    rememberedCoordinates = element;
                 }
                 if (timesSingleValueWasAddedAsPossible == 1) {
-                    mFields.get(remeberedCoordinates).setNumber(singleFieldValue);
+                    mFields.put(rememberedCoordinates, singleFieldValue);
                     wasAnythingSet = true;
                 }
             }
@@ -81,7 +72,7 @@ public class SudokuResolver {
     private boolean isInSquare(int singleFieldValue, int squareNumber) {
         List<Integer> fieldsId = getFieldsFromSquare(squareNumber);
         for (Integer fieldId : fieldsId) {
-            if (mFields.get(fieldId).getNumber() == singleFieldValue) {
+            if (mFields.get(fieldId) == singleFieldValue) {
                 return true;
             }
         }
@@ -90,7 +81,7 @@ public class SudokuResolver {
 
     private boolean isValueInRow(int value, int row) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(row * 10 + i).getNumber() == value) {
+            if (mFields.get(row * 10 + i) == value) {
                 return true;
             }
         }
@@ -99,7 +90,7 @@ public class SudokuResolver {
 
     private boolean isValueInColumn(int value, int column) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(10 * i + column).getNumber() == value) {
+            if (mFields.get(10 * i + column) == value) {
                 return true;
             }
         }
@@ -228,47 +219,6 @@ public class SudokuResolver {
 
     @VisibleForTesting
     int getField(Integer coordinates) {
-        return mFields.get(coordinates).getNumber();
-    }
-
-    private class Field {
-        private int mNumber = 0;
-        private int mXCord;
-        private int mYCord;
-        private int mSquareNumber;
-        private List<Integer> mPossibleNumbers = new ArrayList<>();
-
-        public void setXCord(int xCord) {
-            mXCord = xCord;
-        }
-
-        public void setYCord(int yCord) {
-            mYCord = yCord;
-        }
-
-        public int getNumber() {
-            return mNumber;
-        }
-
-        public void setNumber(int number) {
-            mNumber = number;
-        }
-
-        public void setSquareNumber(int number) { mSquareNumber = number;}
-
-        public void addPossibleNumber(int singleFieldValue) {
-            mPossibleNumbers.add(singleFieldValue);
-        }
-
-        public int getOnlyPossibleNumber() {
-            if (mPossibleNumbers.size() != 1) {
-                throw new RuntimeException("Wrong number of possible numbers: " + mPossibleNumbers);
-            }
-            return mPossibleNumbers.get(0);
-        }
-
-        public int countPossibleNumber() {
-            return mPossibleNumbers.size();
-        }
+        return mFields.get(coordinates);
     }
 }
