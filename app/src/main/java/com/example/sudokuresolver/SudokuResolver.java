@@ -15,7 +15,7 @@ public class SudokuResolver {
             throw new RuntimeException("Wrong number of elements");
         }
         initializeFields(list);
-        analyzeSquares();
+        while(analyzeSquares()) {}
     }
 
     private void initializeFields(List<String> list) {
@@ -41,23 +41,24 @@ public class SudokuResolver {
         }
     }
 
-    private void analyzeSquares() {
+    private boolean analyzeSquares() {
+        boolean wasAnythingSet = false;
         for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
             for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
                 int timesSingleValueWasAddedAsPossible = 0;
                 int remeberedCoordinates = 0;
                 for (Integer element : mFields.keySet()) {
-                    if (squareNumber != getSquareNumber(element)) {
+                     if (squareNumber != getSquareNumber(element)) {
                         continue;
                     }
                     if (mFields.get(element).getNumber() != 0) {
                         continue;
                     }
-                    int row = element % 10;
+                    int row = element / 10;
                     if (isValueInRow(singleFieldValue, row)) {
                         continue;
                     }
-                    int column = element / 10;
+                    int column = element % 10;
                     if (isValueInColumn(singleFieldValue, column)) {
                         continue;
                     }
@@ -69,11 +70,12 @@ public class SudokuResolver {
                     mFields.get(element).addPossibleNumber(singleFieldValue);
                 }
                 if (timesSingleValueWasAddedAsPossible == 1) {
-                    int newValue = mFields.get(remeberedCoordinates).getOnlyPossibleNumber();
-                    mFields.get(remeberedCoordinates).setNumber(newValue);
+                    mFields.get(remeberedCoordinates).setNumber(singleFieldValue);
+                    wasAnythingSet = true;
                 }
             }
         }
+        return wasAnythingSet;
     }
 
     private boolean isInSquare(int singleFieldValue, int squareNumber) {
@@ -263,6 +265,10 @@ public class SudokuResolver {
                 throw new RuntimeException("Wrong number of possible numbers: " + mPossibleNumbers);
             }
             return mPossibleNumbers.get(0);
+        }
+
+        public int countPossibleNumber() {
+            return mPossibleNumbers.size();
         }
     }
 }
