@@ -78,6 +78,12 @@ public class SudokuResolver {
     }
 
     private boolean isInSquare(int singleFieldValue, int squareNumber) {
+        List<Integer> fieldsId = getFieldsFromSquare(squareNumber);
+        for (Integer fieldId : fieldsId) {
+            if (mFields.get(fieldId).getNumber() == singleFieldValue) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -193,6 +199,30 @@ public class SudokuResolver {
                 return 9;
         }
         return 0;
+    }
+
+    private List<Integer> getFieldsFromSquare(int squareNumber) {
+        switch(squareNumber) {
+            case 1:
+                return Arrays.asList(11, 12, 13, 21, 22, 23, 31, 32, 33);
+            case 2:
+                return Arrays.asList(14, 15, 16, 24, 25, 26, 34, 35, 36);
+            case 3:
+                return Arrays.asList(17, 18, 19, 27, 28, 29, 37, 38, 39);
+            case 4:
+                return Arrays.asList(41, 42, 43, 51, 52, 53, 61, 62, 63);
+            case 5:
+                return Arrays.asList(44, 45, 46, 54, 55, 56, 64, 65, 66);
+            case 6:
+                return Arrays.asList(47, 48, 49, 57, 58, 59, 67, 68, 69);
+            case 7:
+                return Arrays.asList(71, 72, 73, 81, 82, 83, 91, 92, 93);
+            case 8:
+                return Arrays.asList(74, 75, 76, 84, 85, 86, 94, 95, 96);
+            case 9:
+                return Arrays.asList(77, 78, 79, 87, 88, 89, 97, 98, 99);
+        }
+        throw new RuntimeException("Not supported number of square: " + squareNumber);
     }
 
     @VisibleForTesting
