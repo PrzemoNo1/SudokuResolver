@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class SudokuResolver {
-    private HashMap<String, Field> mFields;
+    private HashMap<Integer, Field> mFields;
 
     public SudokuResolver(List<String> list) {
         if (list.size() != 81) {
@@ -21,7 +21,7 @@ public class SudokuResolver {
 
     private void initializeFields(List<String> list) {
         mFields = new HashMap<>(81);
-        String initialKey = "11";
+        int initialNumber = 11;
         int xCord = 1;
         int yCord = 1;
         for (String element : list) {
@@ -29,18 +29,16 @@ public class SudokuResolver {
             if (!element.equals("")) {
                 field.setNumber(Integer.parseInt(element));
             }
-            int initialNumber = Integer.parseInt(initialKey);
             xCord = initialNumber % 10;
             yCord = initialNumber / 10;
             field.setXCord(xCord);
             field.setYCord(yCord);
-            field.setSquareNumber(getSquareNumber(initialKey));
-            mFields.put(initialKey, field);
+            field.setSquareNumber(getSquareNumber(initialNumber));
+            mFields.put(initialNumber, field);
             ++initialNumber;
             if (initialNumber % 10 == 0) {
                 ++initialNumber;
             }
-            initialKey = String.valueOf(initialNumber);
         }
     }
 
@@ -48,19 +46,19 @@ public class SudokuResolver {
         for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
             for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
                 int timesSingleValueWasAddedAsPossible = 0;
-                String remeberedCoordinates = "";
-                for (String element : mFields.keySet()) {
+                Integer remeberedCoordinates = 0;
+                for (Integer element : mFields.keySet()) {
                     if (squareNumber != getSquareNumber(element)) {
                         continue;
                     }
                     if (mFields.get(element).getNumber() != 0) {
                         continue;
                     }
-                    int row = Integer.parseInt(element) % 10;
+                    int row = element % 10;
                     if (isValueInRow(singleFieldValue, row)) {
                         continue;
                     }
-                    int column = Integer.parseInt(element) / 10;
+                    int column = element / 10;
                     if (isValueInColumn(singleFieldValue, column)) {
                         continue;
                     }
@@ -84,101 +82,121 @@ public class SudokuResolver {
     }
 
     private boolean isValueInRow(int value, int row) {
-        List<String> elementInRow = Arrays.asList(
-                String.valueOf(row) + "1",
-                String.valueOf(row) + "2",
-                String.valueOf(row) + "3",
-                String.valueOf(row) + "4",
-                String.valueOf(row) + "5",
-                String.valueOf(row) + "6",
-                String.valueOf(row) + "7",
-                String.valueOf(row) + "8",
-                String.valueOf(row) + "9"
-        );
-
-        for (String element : elementInRow) {
-            if (mFields.get(element).getNumber() == value) {
+        for (int i = 1; i <= 9; ++i) {
+            if (mFields.get(row * 10 + i).getNumber() == value) {
                 return true;
             }
         }
-
         return false;
     }
 
     private boolean isValueInColumn(int value, int column) {
-        List<String> elementInColumn = Arrays.asList(
-                "1" + String.valueOf(column),
-                "2" + String.valueOf(column),
-                "3" + String.valueOf(column),
-                "4" + String.valueOf(column),
-                "5" + String.valueOf(column),
-                "6" + String.valueOf(column),
-                "7" + String.valueOf(column),
-                "8" + String.valueOf(column),
-                "9" + String.valueOf(column)
-        );
-
-        for (String element : elementInColumn) {
-            if (mFields.get(element).getNumber() == value) {
+        for (int i = 1; i <= 9; ++i) {
+            if (mFields.get(10 * i + column).getNumber() == value) {
                 return true;
             }
         }
-
         return false;
     }
 
-    private int getSquareNumber(String key) {
-        if (key.equals("11") || key.equals("12") || key.equals("13") ||
-                key.equals("21") || key.equals("22") || key.equals("23") ||
-                key.equals("31") || key.equals("32") || key.equals("33")) {
-            return 1;
+    private int getSquareNumber(Integer key) {
+        switch (key) {
+            case 11:
+            case 12:
+            case 13:
+            case 21:
+            case 22:
+            case 23:
+            case 31:
+            case 32:
+            case 33:
+                return 1;
+            case 14:
+            case 15:
+            case 16:
+            case 24:
+            case 25:
+            case 26:
+            case 34:
+            case 35:
+            case 36:
+                return 2;
+            case 17:
+            case 18:
+            case 19:
+            case 27:
+            case 28:
+            case 29:
+            case 37:
+            case 38:
+            case 39:
+                return 3;
+            case 41:
+            case 42:
+            case 43:
+            case 51:
+            case 52:
+            case 53:
+            case 61:
+            case 62:
+            case 63:
+                return 4;
+            case 44:
+            case 45:
+            case 46:
+            case 54:
+            case 55:
+            case 56:
+            case 64:
+            case 65:
+            case 66:
+                return 5;
+            case 47:
+            case 48:
+            case 49:
+            case 57:
+            case 58:
+            case 59:
+            case 67:
+            case 68:
+            case 69:
+                return 6;
+            case 71:
+            case 72:
+            case 73:
+            case 81:
+            case 82:
+            case 83:
+            case 91:
+            case 92:
+            case 93:
+                return 7;
+            case 74:
+            case 75:
+            case 76:
+            case 84:
+            case 85:
+            case 86:
+            case 94:
+            case 95:
+            case 96:
+                return 8;
+            case 77:
+            case 78:
+            case 79:
+            case 87:
+            case 88:
+            case 89:
+            case 97:
+            case 98:
+            case 99:
+                return 9;
         }
-        if (key.equals("14") || key.equals("15") || key.equals("16") ||
-                key.equals("24") || key.equals("25") || key.equals("26") ||
-                key.equals("34") || key.equals("35") || key.equals("36")) {
-            return 2;
-        }
-        if (key.equals("17") || key.equals("18") || key.equals("19") ||
-                key.equals("27") || key.equals("28") || key.equals("29") ||
-                key.equals("37") || key.equals("38") || key.equals("39")) {
-            return 3;
-        }
-        if (key.equals("41") || key.equals("42") || key.equals("43") ||
-                key.equals("51") || key.equals("52") || key.equals("53") ||
-                key.equals("61") || key.equals("62") || key.equals("63")) {
-            return 4;
-        }
-        if (key.equals("44") || key.equals("45") || key.equals("46") ||
-                key.equals("54") || key.equals("55") || key.equals("56") ||
-                key.equals("64") || key.equals("65") || key.equals("66")) {
-            return 5;
-        }
-        if (key.equals("47") || key.equals("48") || key.equals("49") ||
-                key.equals("57") || key.equals("58") || key.equals("59") ||
-                key.equals("67") || key.equals("68") || key.equals("69")) {
-            return 6;
-        }
-        if (key.equals("71") || key.equals("72") || key.equals("73") ||
-                key.equals("81") || key.equals("82") || key.equals("83") ||
-                key.equals("91") || key.equals("92") || key.equals("93")) {
-            return 7;
-        }
-        if (key.equals("74") || key.equals("75") || key.equals("76") ||
-                key.equals("84") || key.equals("85") || key.equals("86") ||
-                key.equals("94") || key.equals("95") || key.equals("96")) {
-            return 8;
-        }
-        if (key.equals("77") || key.equals("78") || key.equals("79") ||
-                key.equals("87") || key.equals("88") || key.equals("89") ||
-                key.equals("97") || key.equals("98") || key.equals("99")) {
-            return 9;
-        }
-
         return 0;
     }
 
     @VisibleForTesting
-    int getField(String coordinates) {
+    int getField(Integer coordinates) {
         return mFields.get(coordinates).getNumber();
     }
 
