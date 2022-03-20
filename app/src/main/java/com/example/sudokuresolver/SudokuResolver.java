@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 public class SudokuResolver {
     private HashMap<Integer, Field> mFields;
@@ -22,8 +21,8 @@ public class SudokuResolver {
     private void initializeFields(List<String> list) {
         mFields = new HashMap<>(81);
         int initialNumber = 11;
-        int xCord = 1;
-        int yCord = 1;
+        int xCord;
+        int yCord;
         for (String element : list) {
             Field field = new Field();
             if (!element.equals("")) {
@@ -46,7 +45,7 @@ public class SudokuResolver {
         for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
             for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
                 int timesSingleValueWasAddedAsPossible = 0;
-                Integer remeberedCoordinates = 0;
+                int remeberedCoordinates = 0;
                 for (Integer element : mFields.keySet()) {
                     if (squareNumber != getSquareNumber(element)) {
                         continue;
