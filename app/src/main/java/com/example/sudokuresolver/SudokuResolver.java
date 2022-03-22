@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class SudokuResolver {
+    private final boolean DEBUG = false;
     private HashMap<Integer, Integer> mFields;
 
     public SudokuResolver(List<String> list) {
@@ -68,6 +69,7 @@ public class SudokuResolver {
                     rememberedCoordinates = element;
                 }
                 if (timesSingleValueWasAddedAsPossible == 1) {
+                    if (DEBUG) System.out.println("Square: " + rememberedCoordinates + " : " + singleFieldValue);
                     mFields.put(rememberedCoordinates, singleFieldValue);
                     wasAnythingSet = true;
                 }
@@ -88,6 +90,7 @@ public class SudokuResolver {
                 continue;
             } else {
                 anythingWasSet = true;
+                if (DEBUG) System.out.println("Row: " + element + " : " + missingNumber);
                 mFields.put(element, missingNumber);
             }
         }
