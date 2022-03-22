@@ -4,7 +4,9 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SudokuResolver {
     private HashMap<Integer, Integer> mFields;
@@ -15,6 +17,7 @@ public class SudokuResolver {
         }
         initializeFields(list);
         while(analyzeSquares()) {}
+        fillMissingRow();
     }
 
     private void initializeFields(List<String> list) {
@@ -67,6 +70,39 @@ public class SudokuResolver {
             }
         }
         return wasAnythingSet;
+    }
+
+    private void fillMissingRow() {
+        for (Integer element : mFields.keySet()) {
+            if (mFields.get(element) != 0) {
+                continue;
+            }
+            int row = element / 10;
+            int missingNumber = getMissingElementFromRow(row);
+            if (missingNumber == 0) {
+                continue;
+            } else {
+                mFields.put(element, missingNumber);
+            }
+        }
+    }
+
+    private int getMissingElementFromRow(int row) {
+        boolean wasMissingSpot = false;
+        Set<Integer> knownElements = new HashSet<>();
+        for (int i = 1; i <= 9; ++i) { knownElements.add(i); }
+        for (int i = 1; i <= 9; ++i) {
+            if (mFields.get(row * 10 + i) == 0) {
+                if (wasMissingSpot) {
+                    return 0;
+                } else {
+                    wasMissingSpot = true;
+                }
+            } else {
+                knownElements.remove(mFields.get(row * 10 + i));
+            }
+        }
+        return (int) knownElements.toArray()[0];
     }
 
     private boolean isInSquare(int singleFieldValue, int squareNumber) {
