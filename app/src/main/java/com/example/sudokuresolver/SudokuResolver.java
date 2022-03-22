@@ -16,8 +16,12 @@ public class SudokuResolver {
             throw new RuntimeException("Wrong number of elements");
         }
         initializeFields(list);
-        while(analyzeSquares()) {}
-        fillMissingRow();
+        while(analyzeSquares() || fillMissingRow()) {}
+        for (Integer element : mFields.keySet()) {
+            if (mFields.get(element) == 0) {
+                throw new RuntimeException("Field " + element + " was not filled");
+            }
+        }
     }
 
     private void initializeFields(List<String> list) {
@@ -72,7 +76,8 @@ public class SudokuResolver {
         return wasAnythingSet;
     }
 
-    private void fillMissingRow() {
+    private boolean fillMissingRow() {
+        boolean anythingWasSet = false;
         for (Integer element : mFields.keySet()) {
             if (mFields.get(element) != 0) {
                 continue;
@@ -82,9 +87,11 @@ public class SudokuResolver {
             if (missingNumber == 0) {
                 continue;
             } else {
+                anythingWasSet = true;
                 mFields.put(element, missingNumber);
             }
         }
+        return anythingWasSet;
     }
 
     private int getMissingElementFromRow(int row) {
