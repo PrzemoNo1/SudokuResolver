@@ -18,11 +18,11 @@ public class SudokuResolver {
         }
         initializeFields(list);
         while(analyzeSquares() || fillMissingRow()) {}
-/*        for (Integer element : mFields.keySet()) {
+        for (Integer element : mFields.keySet()) {
             if (mFields.get(element) == 0) {
                 throw new RuntimeException("Field " + element + " was not filled");
             }
-        }*/
+        }
     }
 
     private void initializeFields(List<String> list) {
