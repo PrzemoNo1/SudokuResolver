@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class SudokuResolver {
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
     private HashMap<Integer, Integer> mFields;
 
     public SudokuResolver(List<String> list) {
@@ -18,11 +18,11 @@ public class SudokuResolver {
         }
         initializeFields(list);
         while(analyzeSquares() || fillMissingRow()) {}
-        for (Integer element : mFields.keySet()) {
+/*        for (Integer element : mFields.keySet()) {
             if (mFields.get(element) == 0) {
                 throw new RuntimeException("Field " + element + " was not filled");
             }
-        }
+        }*/
     }
 
     private void initializeFields(List<String> list) {
