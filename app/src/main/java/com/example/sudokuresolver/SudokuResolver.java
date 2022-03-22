@@ -48,13 +48,13 @@ public class SudokuResolver {
                 int timesSingleValueWasAddedAsPossible = 0;
                 int rememberedCoordinates = 0;
                 for (Integer element : mFields.keySet()) {
-                    boolean localDebug = false;
+                    boolean localDebug = element == 46 && squareNumber == 5 && singleFieldValue == 8;
                      if (squareNumber != getSquareNumber(element)) {
                          if (localDebug) System.out.println("Wrong square");
                         continue;
                     }
                     if (0 != mFields.get(element)) {
-                        if (localDebug) System.out.println("Not empty");
+                        if (localDebug) System.out.println("Not empty: " + mFields.get(element));
                         continue;
                     }
                     int row = element / 10;
