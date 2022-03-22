@@ -10,7 +10,14 @@ import java.util.Set;
 
 public class SudokuResolver {
     private final boolean DEBUG = true;
-    private HashMap<Integer, Integer> mFields;
+    private HashMap<Integer, Field> mFields;
+
+    private static class Field {
+        public Field(Integer number) {
+            mNumber = number;
+        }
+        public Integer mNumber;
+    }
 
     public SudokuResolver(List<String> list) {
         if (list.size() != 81) {
@@ -19,7 +26,7 @@ public class SudokuResolver {
         initializeFields(list);
         while(analyzeSquares() || fillMissingRow()) {}
         for (Integer element : mFields.keySet()) {
-            if (mFields.get(element) == 0) {
+            if (mFields.get(element).mNumber == 0) {
                 throw new RuntimeException("Field " + element + " was not filled");
             }
         }
@@ -30,9 +37,9 @@ public class SudokuResolver {
         int initialNumber = 11;
         for (String element : list) {
             if (!element.equals("")) {
-                mFields.put(initialNumber, Integer.parseInt(element));
+                mFields.put(initialNumber, new Field(Integer.parseInt(element)));
             } else {
-                mFields.put(initialNumber, 0);
+                mFields.put(initialNumber, new Field(0));
             }
             ++initialNumber;
             if (initialNumber % 10 == 0) {
@@ -53,7 +60,7 @@ public class SudokuResolver {
                          if (localDebug) System.out.println("Wrong square");
                         continue;
                     }
-                    if (0 != mFields.get(element)) {
+                    if (0 != mFields.get(element).mNumber) {
                         if (localDebug) System.out.println("Not empty: " + mFields.get(element));
                         continue;
                     }
@@ -76,7 +83,7 @@ public class SudokuResolver {
                 }
                 if (timesSingleValueWasAddedAsPossible == 1) {
                     if (DEBUG) System.out.println("Square: " + rememberedCoordinates + " : " + singleFieldValue);
-                    mFields.put(rememberedCoordinates, singleFieldValue);
+                    mFields.get(rememberedCoordinates).mNumber = singleFieldValue;
                     wasAnythingSet = true;
                 }
             }
@@ -87,7 +94,7 @@ public class SudokuResolver {
     private boolean fillMissingRow() {
         boolean anythingWasSet = false;
         for (Integer element : mFields.keySet()) {
-            if (mFields.get(element) != 0) {
+            if (mFields.get(element).mNumber != 0) {
                 continue;
             }
             int row = element / 10;
@@ -97,7 +104,7 @@ public class SudokuResolver {
             } else {
                 anythingWasSet = true;
                 if (DEBUG) System.out.println("Row: " + element + " : " + missingNumber);
-                mFields.put(element, missingNumber);
+                mFields.get(element).mNumber = missingNumber;
             }
         }
         return anythingWasSet;
@@ -108,15 +115,18 @@ public class SudokuResolver {
         Set<Integer> knownElements = new HashSet<>();
         for (int i = 1; i <= 9; ++i) { knownElements.add(i); }
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(row * 10 + i) == 0) {
+            if (mFields.get(row * 10 + i).mNumber == 0) {
                 if (wasMissingSpot) {
                     return 0;
                 } else {
                     wasMissingSpot = true;
                 }
             } else {
-                knownElements.remove(mFields.get(row * 10 + i));
+                knownElements.remove(mFields.get(row * 10 + i).mNumber);
             }
+        }
+        if (knownElements.size() != 1) {
+            throw new RuntimeException("Wrong size! : " + knownElements);
         }
         return (int) knownElements.toArray()[0];
     }
@@ -124,7 +134,7 @@ public class SudokuResolver {
     private boolean isInSquare(int singleFieldValue, int squareNumber) {
         List<Integer> fieldsId = getFieldsFromSquare(squareNumber);
         for (Integer fieldId : fieldsId) {
-            if (mFields.get(fieldId) == singleFieldValue) {
+            if (mFields.get(fieldId).mNumber == singleFieldValue) {
                 return true;
             }
         }
@@ -133,7 +143,7 @@ public class SudokuResolver {
 
     private boolean isValueInRow(int value, int row) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(row * 10 + i) == value) {
+            if (mFields.get(row * 10 + i).mNumber == value) {
                 return true;
             }
         }
@@ -142,7 +152,7 @@ public class SudokuResolver {
 
     private boolean isValueInColumn(int value, int column) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(10 * i + column) == value) {
+            if (mFields.get(10 * i + column).mNumber == value) {
                 return true;
             }
         }
@@ -271,6 +281,6 @@ public class SudokuResolver {
 
     @VisibleForTesting
     int getField(Integer coordinates) {
-        return mFields.get(coordinates);
+        return mFields.get(coordinates).mNumber;
     }
 }
