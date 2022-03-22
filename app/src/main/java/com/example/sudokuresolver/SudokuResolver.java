@@ -48,21 +48,27 @@ public class SudokuResolver {
                 int timesSingleValueWasAddedAsPossible = 0;
                 int rememberedCoordinates = 0;
                 for (Integer element : mFields.keySet()) {
+                    boolean localDebug = false;
                      if (squareNumber != getSquareNumber(element)) {
+                         if (localDebug) System.out.println("Wrong square");
                         continue;
                     }
                     if (0 != mFields.get(element)) {
+                        if (localDebug) System.out.println("Not empty");
                         continue;
                     }
                     int row = element / 10;
                     if (isValueInRow(singleFieldValue, row)) {
+                        if (localDebug) System.out.println("Already in row");
                         continue;
                     }
                     int column = element % 10;
                     if (isValueInColumn(singleFieldValue, column)) {
+                        if (localDebug) System.out.println("Already in column");
                         continue;
                     }
                     if (isInSquare(singleFieldValue, squareNumber)) {
+                        if (localDebug) System.out.println("Already in square");
                         continue;
                     }
                     ++timesSingleValueWasAddedAsPossible;
