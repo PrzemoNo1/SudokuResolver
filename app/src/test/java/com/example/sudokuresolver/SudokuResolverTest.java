@@ -307,4 +307,102 @@ public class SudokuResolverTest {
         assertEquals(4, resolver.getField(98));
         assertEquals(9, resolver.getField(99));
     }
+
+    @Test
+    public void resolvedBySquareAndRowAlgorithmsOnly4() {
+        SudokuResolver resolver = new SudokuResolver(Arrays.asList(
+                "", "1", "", /* | */ "", "", "7", /* | */ "6", "", "9",
+                "4", "8", "", /* | */ "9", "", "3", /* | */ "", "", "",
+                "", "9", "7", /* | */ "", "", "", /* | */ "8", "", "",
+                /* --------------------------------------------- */
+                "", "", "", /* | */ "", "", "", /* | */ "", "", "",
+                "", "7", "", /* | */ "", "", "5", /* | */ "2", "", "4",
+                "9", "", "8", /* | */ "", "6", "", /* | */ "", "7", "",
+                /* --------------------------------------------- */
+                "1", "", "3", /* | */ "", "5", "", /* | */ "", "2", "",
+                "", "", "", /* | */ "8", "4", "", /* | */ "", "9", "5",
+                "", "", "9", /* | */ "", "", "", /* | */ "4", "6", ""
+        ));
+        assertEquals(2, resolver.getField(11));
+        assertEquals(1, resolver.getField(12));
+        assertEquals(5, resolver.getField(13));
+        assertEquals(4, resolver.getField(14));
+        assertEquals(8, resolver.getField(15));
+        assertEquals(7, resolver.getField(16));
+        assertEquals(6, resolver.getField(17));
+        assertEquals(3, resolver.getField(18));
+        assertEquals(9, resolver.getField(19));
+        assertEquals(4, resolver.getField(21));
+        assertEquals(8, resolver.getField(22));
+        assertEquals(6, resolver.getField(23));
+        assertEquals(9, resolver.getField(24));
+        assertEquals(2, resolver.getField(25));
+        assertEquals(3, resolver.getField(26));
+        assertEquals(1, resolver.getField(27));
+        assertEquals(5, resolver.getField(28));
+        assertEquals(7, resolver.getField(29));
+        assertEquals(3, resolver.getField(31));
+        assertEquals(9, resolver.getField(32));
+        assertEquals(7, resolver.getField(33));
+        assertEquals(5, resolver.getField(34));
+        assertEquals(1, resolver.getField(35));
+        assertEquals(6, resolver.getField(36));
+        assertEquals(8, resolver.getField(37));
+        assertEquals(4, resolver.getField(38));
+        assertEquals(2, resolver.getField(39));
+        assertEquals(5, resolver.getField(41));
+        assertEquals(3, resolver.getField(42));
+        assertEquals(4, resolver.getField(43));
+        assertEquals(2, resolver.getField(44));
+        assertEquals(7, resolver.getField(45));
+        assertEquals(8, resolver.getField(46));
+        assertEquals(9, resolver.getField(47));
+        assertEquals(1, resolver.getField(48));
+        assertEquals(6, resolver.getField(49));
+        assertEquals(6, resolver.getField(51));
+        assertEquals(7, resolver.getField(52));
+        assertEquals(1, resolver.getField(53));
+        assertEquals(3, resolver.getField(54));
+        assertEquals(9, resolver.getField(55));
+        assertEquals(5, resolver.getField(56));
+        assertEquals(2, resolver.getField(57));
+        assertEquals(8, resolver.getField(58));
+        assertEquals(4, resolver.getField(59));
+        assertEquals(9, resolver.getField(61));
+        assertEquals(2, resolver.getField(62));
+        assertEquals(8, resolver.getField(63));
+        assertEquals(1, resolver.getField(64));
+        assertEquals(6, resolver.getField(65));
+        assertEquals(4, resolver.getField(66));
+        assertEquals(5, resolver.getField(67));
+        assertEquals(7, resolver.getField(68));
+        assertEquals(3, resolver.getField(69));
+        assertEquals(1, resolver.getField(71));
+        assertEquals(4, resolver.getField(72));
+        assertEquals(3, resolver.getField(73));
+        assertEquals(6, resolver.getField(74));
+        assertEquals(5, resolver.getField(75));
+        assertEquals(9, resolver.getField(76));
+        assertEquals(7, resolver.getField(77));
+        assertEquals(2, resolver.getField(78));
+        assertEquals(8, resolver.getField(79));
+        assertEquals(7, resolver.getField(81));
+        assertEquals(6, resolver.getField(82));
+        assertEquals(2, resolver.getField(83));
+        assertEquals(8, resolver.getField(84));
+        assertEquals(4, resolver.getField(85));
+        assertEquals(1, resolver.getField(86));
+        assertEquals(3, resolver.getField(87));
+        assertEquals(9, resolver.getField(88));
+        assertEquals(5, resolver.getField(89));
+        assertEquals(8, resolver.getField(91));
+        assertEquals(5, resolver.getField(92));
+        assertEquals(9, resolver.getField(93));
+        assertEquals(7, resolver.getField(94));
+        assertEquals(3, resolver.getField(95));
+        assertEquals(2, resolver.getField(96));
+        assertEquals(4, resolver.getField(97));
+        assertEquals(6, resolver.getField(98));
+        assertEquals(1, resolver.getField(99));
+    }
 }
