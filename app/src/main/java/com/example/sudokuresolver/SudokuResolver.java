@@ -87,10 +87,64 @@ public class SudokuResolver {
                     clearNumberFromRow(singleFieldValue, coordinates / 10);
                     clearNumberFromColumn(singleFieldValue, coordinates % 10);
                     clearNumberFromSquare(singleFieldValue, squareNumber);
+                } else if (isMoreThenOnce(squareNumber, singleFieldValue)){
+                    int a = isInOneRow(squareNumber, singleFieldValue);
+                    if (a != 0) {
+                        excludeValueFromRowExceptOneSquare(singleFieldValue, squareNumber, a);
+                        for (int i = 1; i <= 9; ++i) {
+                            coordinates = isNumberPossibleOnlyInOnePlace(i, singleFieldValue);
+                            if (coordinates != 0) {
+                                wasAnythingSet = true;
+                                mFields.get(coordinates).mNumber = singleFieldValue;
+                                mFields.get(coordinates).mPossibleNumbers.clear();
+                                clearNumberFromRow(singleFieldValue, coordinates / 10);
+                                clearNumberFromColumn(singleFieldValue, coordinates % 10);
+                                clearNumberFromSquare(singleFieldValue, i);
+                            }
+                        }
+                    }
                 }
             }
         }
         return wasAnythingSet;
+    }
+
+    private void excludeValueFromRowExceptOneSquare(int singleFieldValue, int squareNumber, int row) {
+        List<Integer> fieldsFromSquare = getFieldsFromSquare(squareNumber);
+        List<Integer> elements = new ArrayList<>();
+        for (int i = 1; i <= 9; ++i) {
+            int possibleElement = 10 * row + i;
+            if (fieldsFromSquare.contains(possibleElement)) {
+                continue;
+            }
+            elements.add(possibleElement);
+        }
+        for (Integer element : elements) {
+            mFields.get(element).mPossibleNumbers.remove((Object) singleFieldValue);
+        }
+    }
+
+    private int isInOneRow(int squareNumber, int singleFieldValue) {
+        List<Integer> fields = getFieldsFromSquare(squareNumber);
+        List<Integer> rememberedCoordinates = new ArrayList<>();
+        int firstRow = 0;
+        for (Integer element : fields) {
+            if (mFields.get(element).mNumber != 0) {
+                continue;
+            }
+            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+                if (firstRow == 0) {
+                    firstRow = element / 10;
+                }
+                rememberedCoordinates.add(element);
+            }
+        }
+        for (Integer element : rememberedCoordinates) {
+            if (element / 10 != firstRow) {
+                return 0;
+            }
+        }
+        return firstRow;
     }
 
     private void clearNumberFromSquare(int singleFieldValue, int squareNumber) {
@@ -131,6 +185,21 @@ public class SudokuResolver {
             }
         }
         return coordinatesOfOnlyOne;
+    }
+
+    private boolean isMoreThenOnce(int squareNumber, int singleFieldValue) {
+        List<Integer> fields = getFieldsFromSquare(squareNumber);
+        boolean once = false;
+        for (Integer element : fields) {
+            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+                if (once) {
+                    return true;
+                } else {
+                    once = true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean fillMissingRow() {
