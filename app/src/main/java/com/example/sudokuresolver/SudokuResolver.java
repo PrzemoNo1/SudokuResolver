@@ -26,13 +26,30 @@ public class SudokuResolver {
             throw new RuntimeException("Wrong number of elements");
         }
         initializeFields(list);
-        while(analyzeSquares() || fillMissingRow()) {}
+        while(analyzeSquares() || fillMissingRow() || analyzeSingleFields()) {}
         for (Integer element : mFields.keySet()) {
 /*            if (mFields.get(element).mNumber == 0) {
                 throw new RuntimeException("Field " + element + " was not filled");
             }*/
            if (true) System.out.println(element + " " + mFields.get(element).mNumber + " " + mFields.get(element).mPossibleNumbers);
         }
+    }
+
+    private boolean analyzeSingleFields() {
+        boolean wasAnythingSet = false;
+        for (Integer element : mFields.keySet()) {
+            if (mFields.get(element).mPossibleNumbers.size() == 1) {
+                int newValue = mFields.get(element).mPossibleNumbers.get(0);
+                System.out.println("Single: coordinates: " + element + ", value: " + newValue);
+                wasAnythingSet = true;
+                mFields.get(element).mNumber = newValue;
+                mFields.get(element).mPossibleNumbers.clear();
+                clearNumberFromRow(newValue, element / 10);
+                clearNumberFromColumn(newValue, element % 10);
+                clearNumberFromSquare(newValue, FieldsUtils.getSquareNumber(element));
+            }
+        }
+        return wasAnythingSet;
     }
 
     private void initializeFields(List<String> list) {
