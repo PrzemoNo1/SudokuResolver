@@ -628,7 +628,7 @@ public class SudokuResolverTest {
         //assertEquals(6, resolver.getField(14));
         //assertEquals(4, resolver.getField(15));
         //assertEquals(8, resolver.getField(16));
-        //assertEquals(9, resolver.getField(17));
+        assertEquals(9, resolver.getField(17));
         //assertEquals(5, resolver.getField(18));
         //assertEquals(7, resolver.getField(19));
         //assertEquals(4, resolver.getField(21));

@@ -28,9 +28,10 @@ public class SudokuResolver {
         initializeFields(list);
         while(analyzeSquares() || fillMissingRow()) {}
         for (Integer element : mFields.keySet()) {
-            if (mFields.get(element).mNumber == 0) {
+/*            if (mFields.get(element).mNumber == 0) {
                 throw new RuntimeException("Field " + element + " was not filled");
-            }
+            }*/
+           if (true) System.out.println(element + " " + mFields.get(element).mNumber + " " + mFields.get(element).mPossibleNumbers);
         }
     }
 
@@ -88,14 +89,30 @@ public class SudokuResolver {
                     clearNumberFromColumn(singleFieldValue, coordinates % 10);
                     clearNumberFromSquare(singleFieldValue, squareNumber);
                 } else if (isMoreThenOnce(squareNumber, singleFieldValue)){
-                    int a = isInOneRow(squareNumber, singleFieldValue);
-                    if (a != 0) {
-                        excludeValueFromRowExceptOneSquare(singleFieldValue, squareNumber, a);
+                    int rowCoordinate = isInOneRow(squareNumber, singleFieldValue);
+                    if (rowCoordinate != 0) {
+                        excludeValueFromRowExceptOneSquare(singleFieldValue, squareNumber, rowCoordinate);
                         for (int i = 1; i <= 9; ++i) {
                             coordinates = isNumberPossibleOnlyInOnePlace(i, singleFieldValue);
                             if (coordinates != 0) {
                                 wasAnythingSet = true;
-                                System.out.println("After exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
+                                System.out.println("After row's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
+                                mFields.get(coordinates).mNumber = singleFieldValue;
+                                mFields.get(coordinates).mPossibleNumbers.clear();
+                                clearNumberFromRow(singleFieldValue, coordinates / 10);
+                                clearNumberFromColumn(singleFieldValue, coordinates % 10);
+                                clearNumberFromSquare(singleFieldValue, i);
+                            }
+                        }
+                    }
+                    int columnCoordinate = isInOneColumn(squareNumber, singleFieldValue);
+                    if (columnCoordinate != 0) {
+                        excludeValueFromColumnExceptOneSquare(singleFieldValue, squareNumber, columnCoordinate);
+                        for (int i = 1; i <= 9; ++i) {
+                            coordinates = isNumberPossibleOnlyInOnePlace(i, singleFieldValue);
+                            if (coordinates != 0) {
+                                wasAnythingSet = true;
+                                System.out.println("After column's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
                                 mFields.get(coordinates).mNumber = singleFieldValue;
                                 mFields.get(coordinates).mPossibleNumbers.clear();
                                 clearNumberFromRow(singleFieldValue, coordinates / 10);
@@ -108,6 +125,44 @@ public class SudokuResolver {
             }
         }
         return wasAnythingSet;
+    }
+
+    private void excludeValueFromColumnExceptOneSquare(int singleFieldValue, int squareNumber, int columnCoordinate) {
+            List<Integer> fieldsFromSquare = FieldsUtils.getFieldsFromSquare(squareNumber);
+            List<Integer> elements = new ArrayList<>();
+            for (int i = 1; i <= 9; ++i) {
+                int possibleElement = 10 * i + columnCoordinate;
+                if (fieldsFromSquare.contains(possibleElement)) {
+                    continue;
+                }
+                elements.add(possibleElement);
+            }
+            for (Integer element : elements) {
+                mFields.get(element).mPossibleNumbers.remove((Object) singleFieldValue);
+            }
+    }
+
+    private int isInOneColumn(int squareNumber, int singleFieldValue) {
+        List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
+        List<Integer> rememberedCoordinates = new ArrayList<>();
+        int firstColumn = 0;
+        for (Integer element : fields) {
+            if (mFields.get(element).mNumber != 0) {
+                continue;
+            }
+            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+                if (firstColumn == 0) {
+                    firstColumn = element % 10;
+                }
+                rememberedCoordinates.add(element);
+            }
+        }
+        for (Integer element : rememberedCoordinates) {
+            if (element % 10 != firstColumn) {
+                return 0;
+            }
+        }
+        return firstColumn;
     }
 
     private void excludeValueFromRowExceptOneSquare(int singleFieldValue, int squareNumber, int row) {
