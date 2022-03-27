@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class SudokuResolver {
     private final boolean DEBUG = true;
-    private Board mBoard;
+    private final Board mBoard;
 
     public SudokuResolver(List<String> list) {
         if (list.size() != 81) {
@@ -28,11 +28,7 @@ public class SudokuResolver {
                 int newValue = mBoard.getPossibleNumbers(element).get(0);
                 System.out.println("Single: coordinates: " + element + ", value: " + newValue);
                 wasAnythingSet = true;
-                mBoard.set(element, newValue);
-                mBoard.getPossibleNumbers(element).clear();
-                clearNumberFromRow(newValue, element / 10);
-                clearNumberFromColumn(newValue, element % 10);
-                clearNumberFromSquare(newValue, FieldsUtils.getSquareNumber(element));
+                setOnBoard(element, newValue);
             }
         }
         return wasAnythingSet;
@@ -71,10 +67,6 @@ public class SudokuResolver {
                     if (DEBUG) System.out.println("Square: " + coordinates + " : " + singleFieldValue);
                     wasAnythingSet = true;
                     mBoard.set(coordinates, singleFieldValue);
-                    mBoard.getPossibleNumbers(coordinates).clear();
-                    clearNumberFromRow(singleFieldValue, coordinates / 10);
-                    clearNumberFromColumn(singleFieldValue, coordinates % 10);
-                    clearNumberFromSquare(singleFieldValue, squareNumber);
                 } else if (isMoreThenOnce(squareNumber, singleFieldValue)){
                     int rowCoordinate = isInOneRow(squareNumber, singleFieldValue);
                     if (rowCoordinate != 0) {
@@ -84,11 +76,7 @@ public class SudokuResolver {
                             if (coordinates != 0) {
                                 wasAnythingSet = true;
                                 System.out.println("After row's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
-                                mBoard.set(coordinates, singleFieldValue);
-                                mBoard.getPossibleNumbers(coordinates).clear();
-                                clearNumberFromRow(singleFieldValue, coordinates / 10);
-                                clearNumberFromColumn(singleFieldValue, coordinates % 10);
-                                clearNumberFromSquare(singleFieldValue, i);
+                                setOnBoard(coordinates, singleFieldValue);
                             }
                         }
                     }
@@ -100,11 +88,7 @@ public class SudokuResolver {
                             if (coordinates != 0) {
                                 wasAnythingSet = true;
                                 System.out.println("After column's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
-                                mBoard.set(coordinates, singleFieldValue);
-                                mBoard.getPossibleNumbers(coordinates).clear();
-                                clearNumberFromRow(singleFieldValue, coordinates / 10);
-                                clearNumberFromColumn(singleFieldValue, coordinates % 10);
-                                clearNumberFromSquare(singleFieldValue, i);
+                                setOnBoard(coordinates, singleFieldValue);
                             }
                         }
                     }
@@ -190,31 +174,6 @@ public class SudokuResolver {
         return firstRow;
     }
 
-    private void clearNumberFromSquare(int singleFieldValue, int squareNumber) {
-        List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
-        for (Integer element : fields) {
-            if (mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
-                mBoard.getPossibleNumbers(element).remove((Object) singleFieldValue);
-            }
-        }
-    }
-
-    private void clearNumberFromColumn(int singleFieldValue, int column) {
-        for (int i = 1; i <= 9; ++i) {
-            if (mBoard.getPossibleNumbers(10 * i + column).contains(singleFieldValue)) {
-                mBoard.getPossibleNumbers(10 * i + column).remove((Object) singleFieldValue);
-            }
-        }
-    }
-
-    private void clearNumberFromRow(int singleFieldValue, int row) {
-        for (int i = 1; i <= 9; ++i) {
-            if (mBoard.getPossibleNumbers(row * 10 + i).contains(singleFieldValue)) {
-                mBoard.getPossibleNumbers(row * 10 + i).remove((Object) singleFieldValue);
-            }
-        }
-    }
-
     private int isNumberPossibleOnlyInOnePlace(int squareNumber, int singleFieldValue) {
         List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
         int coordinatesOfOnlyOne = 0;
@@ -258,11 +217,7 @@ public class SudokuResolver {
             } else {
                 anythingWasSet = true;
                 if (DEBUG) System.out.println("Row: " + element + " : " + missingNumber);
-                mBoard.set(element, missingNumber);
-                mBoard.getPossibleNumbers(element).clear();
-                clearNumberFromRow(missingNumber, element / 10);
-                clearNumberFromColumn(missingNumber, element % 10);
-                clearNumberFromSquare(missingNumber, FieldsUtils.getSquareNumber(element));
+                setOnBoard(element, missingNumber);
             }
         }
         return anythingWasSet;
@@ -315,6 +270,10 @@ public class SudokuResolver {
             }
         }
         return false;
+    }
+
+    public void setOnBoard(int coordinates, int value) {
+        mBoard.set(coordinates, value);
     }
 
     @VisibleForTesting

@@ -44,6 +44,35 @@ public class Board {
 
     public void set(int coordinates, int value) {
         mFields.get(coordinates).mNumber = value;
+        mFields.get(coordinates).mPossibleNumbers.clear();
+        clearNumberFromRow(value, coordinates / 10);
+        clearNumberFromColumn(value, coordinates % 10);
+        clearNumberFromSquare(value, FieldsUtils.getSquareNumber(coordinates));
+    }
+
+    private void clearNumberFromSquare(int singleFieldValue, int squareNumber) {
+        List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
+        for (Integer coordinates : fields) {
+            if (mFields.get(coordinates).mPossibleNumbers.contains(singleFieldValue)) {
+                mFields.get(coordinates).mPossibleNumbers.remove((Object) singleFieldValue);
+            }
+        }
+    }
+
+    private void clearNumberFromColumn(int singleFieldValue, int column) {
+        for (int i = 1; i <= 9; ++i) {
+            if (mFields.get(10 * i + column).mPossibleNumbers.contains(singleFieldValue)) {
+                mFields.get(10 * i + column).mPossibleNumbers.remove((Object) singleFieldValue);
+            }
+        }
+    }
+
+    private void clearNumberFromRow(int singleFieldValue, int row) {
+        for (int i = 1; i <= 9; ++i) {
+            if (mFields.get(row * 10 + i).mPossibleNumbers.contains(singleFieldValue)) {
+                mFields.get(row * 10 + i).mPossibleNumbers.remove((Object) singleFieldValue);
+            }
+        }
     }
 
     public List<Integer> getPossibleNumbers(int coordinates) {
