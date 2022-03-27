@@ -3,8 +3,6 @@ package com.example.sudokuresolver;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -211,9 +209,7 @@ public class SudokuResolver {
             }
             int row = element / 10;
             int missingNumber = getMissingElementFromRow(row);
-            if (missingNumber == 0) {
-                continue;
-            } else {
+            if (missingNumber != 0) {
                 anythingWasSet = true;
                 if (DEBUG) System.out.println("Row: " + element + " : " + missingNumber);
                 setOnBoard(element, missingNumber);
