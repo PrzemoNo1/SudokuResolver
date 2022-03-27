@@ -11,39 +11,25 @@ import java.util.Set;
 
 public class SudokuResolver {
     private final boolean DEBUG = true;
-    private HashMap<Integer, Field> mFields;
-
-    private static class Field {
-        public Field(Integer number) {
-            mNumber = number;
-        }
-        public Integer mNumber;
-        public List<Integer> mPossibleNumbers = new ArrayList<>();
-    }
+    private Board mBoard;
 
     public SudokuResolver(List<String> list) {
         if (list.size() != 81) {
             throw new RuntimeException("Wrong number of elements");
         }
-        initializeFields(list);
+        mBoard = new Board(list);
         while(analyzeSquares() || fillMissingRow() || analyzeSingleFields()) {}
-        for (Integer element : mFields.keySet()) {
-/*            if (mFields.get(element).mNumber == 0) {
-                throw new RuntimeException("Field " + element + " was not filled");
-            }*/
-           if (true) System.out.println(element + " " + mFields.get(element).mNumber + " " + mFields.get(element).mPossibleNumbers);
-        }
     }
 
     private boolean analyzeSingleFields() {
         boolean wasAnythingSet = false;
-        for (Integer element : mFields.keySet()) {
-            if (mFields.get(element).mPossibleNumbers.size() == 1) {
-                int newValue = mFields.get(element).mPossibleNumbers.get(0);
+        for (Integer element : mBoard.keySet()) {
+            if (mBoard.getPossibleNumbers(element).size() == 1) {
+                int newValue = mBoard.getPossibleNumbers(element).get(0);
                 System.out.println("Single: coordinates: " + element + ", value: " + newValue);
                 wasAnythingSet = true;
-                mFields.get(element).mNumber = newValue;
-                mFields.get(element).mPossibleNumbers.clear();
+                mBoard.set(element, newValue);
+                mBoard.getPossibleNumbers(element).clear();
                 clearNumberFromRow(newValue, element / 10);
                 clearNumberFromColumn(newValue, element % 10);
                 clearNumberFromSquare(newValue, FieldsUtils.getSquareNumber(element));
@@ -52,30 +38,14 @@ public class SudokuResolver {
         return wasAnythingSet;
     }
 
-    private void initializeFields(List<String> list) {
-        mFields = new HashMap<>(81);
-        int initialNumber = 11;
-        for (String element : list) {
-            if (!element.equals("")) {
-                mFields.put(initialNumber, new Field(Integer.parseInt(element)));
-            } else {
-                mFields.put(initialNumber, new Field(0));
-            }
-            ++initialNumber;
-            if (initialNumber % 10 == 0) {
-                ++initialNumber;
-            }
-        }
-    }
-
     private boolean analyzeSquares() {
         boolean wasAnythingSet = false;
         for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
             for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
                 for (Integer element : FieldsUtils.getFieldsFromSquare(squareNumber)) {
                     boolean localDebug = false;
-                    if (0 != mFields.get(element).mNumber) {
-                        if (localDebug) System.out.println("Not empty: " + mFields.get(element));
+                    if (mBoard.isSet(element)) {
+                        if (localDebug) System.out.println("Not empty: " + mBoard.get(element));
                         continue;
                     }
                     int row = element / 10;
@@ -92,16 +62,16 @@ public class SudokuResolver {
                         if (localDebug) System.out.println("Already in square");
                         continue;
                     }
-                    if (!mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
-                        mFields.get(element).mPossibleNumbers.add(singleFieldValue);
+                    if (!mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
+                        mBoard.getPossibleNumbers(element).add(singleFieldValue);
                     }
                 }
                 int coordinates = isNumberPossibleOnlyInOnePlace(squareNumber, singleFieldValue);
                 if (coordinates != 0) {
                     if (DEBUG) System.out.println("Square: " + coordinates + " : " + singleFieldValue);
                     wasAnythingSet = true;
-                    mFields.get(coordinates).mNumber = singleFieldValue;
-                    mFields.get(coordinates).mPossibleNumbers.clear();
+                    mBoard.set(coordinates, singleFieldValue);
+                    mBoard.getPossibleNumbers(coordinates).clear();
                     clearNumberFromRow(singleFieldValue, coordinates / 10);
                     clearNumberFromColumn(singleFieldValue, coordinates % 10);
                     clearNumberFromSquare(singleFieldValue, squareNumber);
@@ -114,8 +84,8 @@ public class SudokuResolver {
                             if (coordinates != 0) {
                                 wasAnythingSet = true;
                                 System.out.println("After row's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
-                                mFields.get(coordinates).mNumber = singleFieldValue;
-                                mFields.get(coordinates).mPossibleNumbers.clear();
+                                mBoard.set(coordinates, singleFieldValue);
+                                mBoard.getPossibleNumbers(coordinates).clear();
                                 clearNumberFromRow(singleFieldValue, coordinates / 10);
                                 clearNumberFromColumn(singleFieldValue, coordinates % 10);
                                 clearNumberFromSquare(singleFieldValue, i);
@@ -130,8 +100,8 @@ public class SudokuResolver {
                             if (coordinates != 0) {
                                 wasAnythingSet = true;
                                 System.out.println("After column's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
-                                mFields.get(coordinates).mNumber = singleFieldValue;
-                                mFields.get(coordinates).mPossibleNumbers.clear();
+                                mBoard.set(coordinates, singleFieldValue);
+                                mBoard.getPossibleNumbers(coordinates).clear();
                                 clearNumberFromRow(singleFieldValue, coordinates / 10);
                                 clearNumberFromColumn(singleFieldValue, coordinates % 10);
                                 clearNumberFromSquare(singleFieldValue, i);
@@ -155,7 +125,7 @@ public class SudokuResolver {
                 elements.add(possibleElement);
             }
             for (Integer element : elements) {
-                mFields.get(element).mPossibleNumbers.remove((Object) singleFieldValue);
+                mBoard.getPossibleNumbers(element).remove((Object) singleFieldValue);
             }
     }
 
@@ -164,10 +134,10 @@ public class SudokuResolver {
         List<Integer> rememberedCoordinates = new ArrayList<>();
         int firstColumn = 0;
         for (Integer element : fields) {
-            if (mFields.get(element).mNumber != 0) {
+            if (mBoard.isSet(element)) {
                 continue;
             }
-            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+            if (mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
                 if (firstColumn == 0) {
                     firstColumn = element % 10;
                 }
@@ -193,7 +163,7 @@ public class SudokuResolver {
             elements.add(possibleElement);
         }
         for (Integer element : elements) {
-            mFields.get(element).mPossibleNumbers.remove((Object) singleFieldValue);
+            mBoard.getPossibleNumbers(element).remove((Object) singleFieldValue);
         }
     }
 
@@ -202,10 +172,10 @@ public class SudokuResolver {
         List<Integer> rememberedCoordinates = new ArrayList<>();
         int firstRow = 0;
         for (Integer element : fields) {
-            if (mFields.get(element).mNumber != 0) {
+            if (mBoard.isSet(element)) {
                 continue;
             }
-            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+            if (mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
                 if (firstRow == 0) {
                     firstRow = element / 10;
                 }
@@ -223,24 +193,24 @@ public class SudokuResolver {
     private void clearNumberFromSquare(int singleFieldValue, int squareNumber) {
         List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
         for (Integer element : fields) {
-            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
-                mFields.get(element).mPossibleNumbers.remove((Object) singleFieldValue);
+            if (mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
+                mBoard.getPossibleNumbers(element).remove((Object) singleFieldValue);
             }
         }
     }
 
     private void clearNumberFromColumn(int singleFieldValue, int column) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(10 * i + column).mPossibleNumbers.contains(singleFieldValue)) {
-                mFields.get(10 * i + column).mPossibleNumbers.remove((Object) singleFieldValue);
+            if (mBoard.getPossibleNumbers(10 * i + column).contains(singleFieldValue)) {
+                mBoard.getPossibleNumbers(10 * i + column).remove((Object) singleFieldValue);
             }
         }
     }
 
     private void clearNumberFromRow(int singleFieldValue, int row) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(row * 10 + i).mPossibleNumbers.contains(singleFieldValue)) {
-                mFields.get(row * 10 + i).mPossibleNumbers.remove((Object) singleFieldValue);
+            if (mBoard.getPossibleNumbers(row * 10 + i).contains(singleFieldValue)) {
+                mBoard.getPossibleNumbers(row * 10 + i).remove((Object) singleFieldValue);
             }
         }
     }
@@ -249,7 +219,7 @@ public class SudokuResolver {
         List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
         int coordinatesOfOnlyOne = 0;
         for (Integer element : fields) {
-            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+            if (mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
                 if (coordinatesOfOnlyOne != 0) {
                     return 0;
                 } else {
@@ -264,7 +234,7 @@ public class SudokuResolver {
         List<Integer> fields = FieldsUtils.getFieldsFromSquare(squareNumber);
         boolean once = false;
         for (Integer element : fields) {
-            if (mFields.get(element).mPossibleNumbers.contains(singleFieldValue)) {
+            if (mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
                 if (once) {
                     return true;
                 } else {
@@ -277,8 +247,8 @@ public class SudokuResolver {
 
     private boolean fillMissingRow() {
         boolean anythingWasSet = false;
-        for (Integer element : mFields.keySet()) {
-            if (mFields.get(element).mNumber != 0) {
+        for (Integer element : mBoard.keySet()) {
+            if (mBoard.isSet(element)) {
                 continue;
             }
             int row = element / 10;
@@ -288,8 +258,8 @@ public class SudokuResolver {
             } else {
                 anythingWasSet = true;
                 if (DEBUG) System.out.println("Row: " + element + " : " + missingNumber);
-                mFields.get(element).mNumber = missingNumber;
-                mFields.get(element).mPossibleNumbers.clear();
+                mBoard.set(element, missingNumber);
+                mBoard.getPossibleNumbers(element).clear();
                 clearNumberFromRow(missingNumber, element / 10);
                 clearNumberFromColumn(missingNumber, element % 10);
                 clearNumberFromSquare(missingNumber, FieldsUtils.getSquareNumber(element));
@@ -303,14 +273,14 @@ public class SudokuResolver {
         Set<Integer> knownElements = new HashSet<>();
         for (int i = 1; i <= 9; ++i) { knownElements.add(i); }
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(row * 10 + i).mNumber == 0) {
+            if (mBoard.get(row * 10 + i) == 0) {
                 if (wasMissingSpot) {
                     return 0;
                 } else {
                     wasMissingSpot = true;
                 }
             } else {
-                knownElements.remove(mFields.get(row * 10 + i).mNumber);
+                knownElements.remove(mBoard.get(row * 10 + i));
             }
         }
         if (knownElements.size() != 1) {
@@ -322,7 +292,7 @@ public class SudokuResolver {
     private boolean isInSquare(int singleFieldValue, int squareNumber) {
         List<Integer> fieldsId = FieldsUtils.getFieldsFromSquare(squareNumber);
         for (Integer fieldId : fieldsId) {
-            if (mFields.get(fieldId).mNumber == singleFieldValue) {
+            if (mBoard.get(fieldId) == singleFieldValue) {
                 return true;
             }
         }
@@ -331,7 +301,7 @@ public class SudokuResolver {
 
     private boolean isValueInRow(int value, int row) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(row * 10 + i).mNumber == value) {
+            if (mBoard.get(row * 10 + i) == value) {
                 return true;
             }
         }
@@ -340,7 +310,7 @@ public class SudokuResolver {
 
     private boolean isValueInColumn(int value, int column) {
         for (int i = 1; i <= 9; ++i) {
-            if (mFields.get(10 * i + column).mNumber == value) {
+            if (mBoard.get(10 * i + column) == value) {
                 return true;
             }
         }
@@ -349,6 +319,6 @@ public class SudokuResolver {
 
     @VisibleForTesting
     int getField(Integer coordinates) {
-        return mFields.get(coordinates).mNumber;
+        return mBoard.get(coordinates);
     }
 }
