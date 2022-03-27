@@ -30,7 +30,6 @@ public class SudokuResolver {
             if (mBoard.getPossibleNumbers(element).size() == 1) {
                 int newValue = mBoard.getPossibleNumbers(element).get(0);
                 System.out.println("Single: coordinates: " + element + ", value: " + newValue);
-                mWasAnythingSet = true;
                 setOnBoard(element, newValue);
             }
         }
@@ -65,8 +64,8 @@ public class SudokuResolver {
                 int coordinates = isNumberPossibleOnlyInOnePlace(squareNumber, singleFieldValue);
                 if (coordinates != 0) {
                     if (DEBUG) System.out.println("Square: " + coordinates + " : " + singleFieldValue);
-                    mWasAnythingSet = true;
-                    mBoard.set(coordinates, singleFieldValue);
+
+                    setOnBoard(coordinates, singleFieldValue);
                 } else if (isMoreThenOnce(squareNumber, singleFieldValue)){
                     int rowCoordinate = isInOneRow(squareNumber, singleFieldValue);
                     if (rowCoordinate != 0) {
@@ -74,7 +73,6 @@ public class SudokuResolver {
                         for (int i = 1; i <= 9; ++i) {
                             coordinates = isNumberPossibleOnlyInOnePlace(i, singleFieldValue);
                             if (coordinates != 0) {
-                                mWasAnythingSet = true;
                                 System.out.println("After row's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
                                 setOnBoard(coordinates, singleFieldValue);
                             }
@@ -86,7 +84,6 @@ public class SudokuResolver {
                         for (int i = 1; i <= 9; ++i) {
                             coordinates = isNumberPossibleOnlyInOnePlace(i, singleFieldValue);
                             if (coordinates != 0) {
-                                mWasAnythingSet = true;
                                 System.out.println("After column's exclude, coordinates: " + coordinates + ", value: " + singleFieldValue);
                                 setOnBoard(coordinates, singleFieldValue);
                             }
@@ -211,7 +208,6 @@ public class SudokuResolver {
             int row = element / 10;
             int missingNumber = getMissingElementFromRow(row);
             if (missingNumber != 0) {
-                mWasAnythingSet = true;
                 if (DEBUG) System.out.println("Row: " + element + " : " + missingNumber);
                 setOnBoard(element, missingNumber);
             }
@@ -268,6 +264,7 @@ public class SudokuResolver {
     }
 
     public void setOnBoard(int coordinates, int value) {
+        mWasAnythingSet = true;
         mBoard.set(coordinates, value);
     }
 
