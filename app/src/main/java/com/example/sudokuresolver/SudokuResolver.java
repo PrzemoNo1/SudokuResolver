@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 public class SudokuResolver {
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
     private final Board mBoard;
-    private boolean mWasAnythingSet = false;
+    private boolean mWasAnythingSet;
 
     public SudokuResolver(List<String> list) {
         if (list.size() != 81) {
