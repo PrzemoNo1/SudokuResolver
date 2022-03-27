@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Board {
-    private HashMap<Integer, Field> mFields;
+    private final HashMap<Integer, Field> mFields;
 
     public Board(List<String> list) {
             mFields = new HashMap<>(81);
