@@ -39,23 +39,22 @@ public class SudokuResolver {
         for (int singleFieldValue = 1; singleFieldValue <= 9; ++singleFieldValue) {
             for (int squareNumber = 1; squareNumber <= 9; ++squareNumber) {
                 for (Integer element : FieldsUtils.getFieldsFromSquare(squareNumber)) {
-                    boolean localDebug = false;
                     if (mBoard.isSet(element)) {
-                        if (localDebug) System.out.println("Not empty: " + mBoard.get(element));
+                        if (DEBUG) System.out.println("Not empty: " + mBoard.get(element));
                         continue;
                     }
                     int row = element / 10;
                     if (isValueInRow(singleFieldValue, row)) {
-                        if (localDebug) System.out.println("Already in row");
+                        if (DEBUG) System.out.println("Already in row");
                         continue;
                     }
                     int column = element % 10;
                     if (isValueInColumn(singleFieldValue, column)) {
-                        if (localDebug) System.out.println("Already in column");
+                        if (DEBUG) System.out.println("Already in column");
                         continue;
                     }
                     if (isInSquare(singleFieldValue, squareNumber)) {
-                        if (localDebug) System.out.println("Already in square");
+                        if (DEBUG) System.out.println("Already in square");
                         continue;
                     }
                     if (!mBoard.getPossibleNumbers(element).contains(singleFieldValue)) {
